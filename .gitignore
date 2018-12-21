@@ -1,0 +1,10 @@
+# build files
+/.build
+/.debug
+/.release
+/build
+/debug
+/release
+
+# editor files
+*.swp

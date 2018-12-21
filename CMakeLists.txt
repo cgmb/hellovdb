@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 2.8.12)
 project(hellovdb)
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
+
 # find_package for OpenVDB doesn't find its dependencies,
 # but most of them come from or are shared with OpenEXR, which
 # is handled with a find_package from extra-cmake-modules
@@ -17,7 +18,7 @@ include_directories(${Boost_INCLUDE_DIRS} SYSTEM)
 
 include_directories(.)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++98 -Wall -Wextra")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Wextra")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native -ffast-math")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror=return-type")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror=reorder")
@@ -27,19 +28,25 @@ if("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
 endif()
 
 if(CMAKE_BUILD_TYPE STREQUAL "" OR CMAKE_BUILD_TYPE STREQUAL "Debug")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Og")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_FORTIFY_SOURCE=2")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_GLIBCXX_ASSERTIONS")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_GLIBCXX_DEBUG")
+#  _GLIBCXX_DEBUG conflicts with openvdb and causes errors at runtime
+#  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_GLIBCXX_DEBUG")
 endif()
 
-set(SOURCES
- main.cxx
-)
-
-add_executable(hellovdb ${SOURCES})
+add_executable(hellovdb hello.cxx)
 target_link_libraries(hellovdb
   ${OpenVDB_LIBRARIES}
   ${OpenEXR_LIBRARIES}
   ${TBB_LIBRARIES}
+  ${Boost_LIBRARIES}
+)
+
+add_executable(cwg create_write_grid.cxx)
+target_link_libraries(cwg
+  ${OpenVDB_LIBRARIES}
+  ${OpenEXR_LIBRARIES}
+  ${TBB_LIBRARIES}
+  ${Boost_LIBRARIES}
 )
